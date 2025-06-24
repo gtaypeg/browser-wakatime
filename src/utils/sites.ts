@@ -261,12 +261,14 @@ const Figma: HeartbeatParser = (_url: string): OptionalHeartbeat | undefined => 
   const figmaProject = document.getElementsByClassName('gpu-view-content');
   if (figmaProject.length === 0) return;
 
-  const project = (document.querySelector('span[data-testid="filename"]') as HTMLElement).innerText;
+  const title = document.querySelector('title')?.innerText;
+  if (!title) return;
+
   return {
     category: Category.designing,
     language: 'Image (svg)',
     plugin: 'Figma',
-    project,
+    project: title,
   };
 };
 
@@ -277,7 +279,7 @@ const GoogleMeet: HeartbeatParser = (_url: string): OptionalHeartbeat | undefine
   return {
     category: Category.meeting,
     plugin: 'Google Meet',
-    project: meetId,
+    project: `Google Meet: ${meetId}`,
   };
 };
 
@@ -288,7 +290,7 @@ const MicrosoftTeams: HeartbeatParser = (_url: string): OptionalHeartbeat | unde
   const title = document.querySelector('title')?.innerText;
   if (!title) return;
 
-  const meetingTitle = title.split(' | ')[1];
+  const meetingTitle = title;
   if (!meetingTitle.trim()) return;
 
   return {
@@ -373,7 +375,7 @@ const SITES: Record<KnownSite, SiteParser> = {
   github: {
     parser: GitHub,
     urls: [
-      /^https?:\/\/(.+\.)?github.com\//,
+      // /^https?:\/\/(.+\.)?github.com\//,
       /^https?:\/\/(.+\.)?github.dev\//,
       /^https?:\/\/(.+\.)?github.blog\//,
       /^https?:\/\/(.+\.)?github.io\//,
@@ -397,7 +399,11 @@ const SITES: Record<KnownSite, SiteParser> = {
   msteams: {
     parser: MicrosoftTeams,
     trackWithoutMouseMoving: true,
-    urls: [/^https:\/\/teams.live.com\/v2\//, /^https:\/\/teams.microsoft.com\/v1\//],
+    urls: [
+      /^https:\/\/teams.live.com\//,
+      /^https:\/\/teams.microsoft.com\/v1\//,
+      /^https:\/\/teams.microsoft.com\//,
+    ],
   },
   slack: {
     parser: Slack,
