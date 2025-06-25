@@ -259,10 +259,18 @@ const Canva: HeartbeatParser = (_url: string): OptionalHeartbeat | undefined => 
 
 const Figma: HeartbeatParser = (_url: string): OptionalHeartbeat | undefined => {
   const figmaProject = document.getElementsByClassName('gpu-view-content');
+
   if (figmaProject.length === 0) return;
 
-  const title = document.querySelector('title')?.innerText;
+  let title = document.querySelector('title')?.innerText;
+
   if (!title) return;
+
+  const folderName = document.querySelector('[data-testid="folder-name-link"]')?.textContent;
+
+  if (folderName) {
+    title = `${folderName} - ${title}`;
+  }
 
   return {
     category: Category.designing,
